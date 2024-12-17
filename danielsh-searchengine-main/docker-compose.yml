@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"  # Exposing correct client port
+    networks:
+      - my-custom-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9095:9092"  # Map container port 9092 to host 9095
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - my-custom-network
+
+
+  redis:
+    image: redis
+    ports:
+      - "6381:6379"  # Ensure app uses 6379 internally
+    privileged: true
+    networks:
+      - my-custom-network
+
+  searchengine:
+    build: .
+    depends_on:
+      - kafka
+      - redis
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092  # Connect inside network
+      SPRING_REDIS_HOST: redis  # Redis service name
+    ports:
+      - "8080:8080"  # Expose app port
+    networks:
+      - my-custom-network
+
+networks:
+  my-custom-network:
+    driver: bridge
