@@ -383,7 +383,6 @@ commit - with kafka algo
 ###ElasticSearch
 create new index:
 ```
-curl --location --request PUT 'https://avnadmin:1Nljw6Duro7x5mi8@handson-handson-52c9.aivencloud.com:19384/[yourname]'
 ```
 pom.xml
 ```
@@ -410,12 +409,4 @@ crawler/Crawler.java
         elasticSearch.addData(searchDoc);
         }
 ```
-https://handson-handson-52c9.aivencloud.com/app/management/opensearch-dashboards/indexPatterns/create
-<br>
-user: avnadmin
-<br>
-pass: 1Nljw6Duro7x5mi8
-<br>
-https://handson-handson-52c9.aivencloud.com/app/discover#
-<br>
-commit- with elasticsearch
+
